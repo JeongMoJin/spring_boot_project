@@ -5,7 +5,12 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -49,6 +54,24 @@ public class BoardRepositoryTests {
     public void deleteTest() {
         Long bno = 1L;
         boardRepository.deleteById(bno);
+    }
+
+    @Test
+    public void testPaging() {
+        Pageable pageable = PageRequest.of(0, 10,
+                Sort.by("bno").descending());
+        Page<Board> result = boardRepository.findAll(pageable);
+
+        log.info("total count: " + result.getTotalElements());
+        log.info("total page: " + result.getTotalPages());
+        log.info("page number: " + result.getNumber());
+        log.info("page size: " + result.getSize());
+        // prev next
+        log.info(result.hasPrevious() + ": " + result.hasNext());
+
+        List<Board> boardList = result.getContent();
+
+        boardList.forEach(board -> log.info(board));
     }
 }
 
